@@ -1,126 +1,194 @@
-document.addEventListener("DOMContentLoaded", function() {
-  // --- CANVAS SETUP ---
+document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("canvas-container");
-  if (!container) {
-    console.error("Canvas container not found");
-    return;
-  }
-  
+  if (!container) return;
+
   const canvas = document.createElement("canvas");
   container.appendChild(canvas);
-  const ctx = canvas.getContext("2d");
-  
-  let dynamicActive = false;
-  let mouseX = 0, mouseY = 0;
-  
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    if (!dynamicActive) {
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const ctx = canvas.getContext("2d", { alpha: false });
+  if (!ctx) return;
+
+  let w = 1;
+  let h = 1;
+  let dpr = 1;
+
+  let active = false;
+  let x = 0;
+  let y = 0;
+
+  let rafPending = false;
+
+  let flash = null;
+
+  const isCoarse =
+    (window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches) ||
+    ((navigator.maxTouchPoints || 0) > 0);
+
+  const clamp = (n, min, max) => Math.max(min, Math.min(n, max));
+
+  const resize = () => {
+    w = window.innerWidth || 1;
+    h = window.innerHeight || 1;
+
+    document.documentElement.style.setProperty("--vh", `${h * 0.01}px`);
+
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${h}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  };
+
+  const tieDye = (px, py, boost = 0) => {
+    px = clamp(px, 0, w);
+    py = clamp(py, 0, h);
+
+    const hue = (px / w) * 360;
+    const sat = clamp((py / h) * 100 * (1 + boost * 0.12), 0, 100);
+    const light = 50 + Math.sin(px * 0.05) * 20 + boost * 10;
+
+    const rad = w / 2;
+    const grad = ctx.createRadialGradient(px, py, 0, px, py, rad);
+    grad.addColorStop(0, `hsl(${hue}, ${sat}%, ${light}%)`);
+    grad.addColorStop(0.25, `hsl(${(hue + 60) % 360}, ${sat}%, ${light - 5}%)`);
+    grad.addColorStop(0.5, `hsl(${(hue + 120) % 360}, ${sat}%, ${light - 10}%)`);
+    grad.addColorStop(0.75, `hsl(${(hue + 180) % 360}, ${sat}%, ${light - 15}%)`);
+    grad.addColorStop(1, `hsl(${(hue + 240) % 360}, ${sat}%, ${light - 20}%)`);
+    return grad;
+  };
+
+  const drawBlack = () => {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, w, h);
+  };
+
+  const drawActive = () => {
+    ctx.fillStyle = tieDye(x, y, 0);
+    ctx.fillRect(0, 0, w, h);
+  };
+
+  const drawFlash = (now) => {
+    if (!flash) return;
+
+    const t = (now - flash.start) / flash.dur;
+    if (t >= 1) {
+      flash = null;
+      return;
     }
-  }
-  resizeCanvas();
-  window.addEventListener("resize", resizeCanvas);
-  
-  function getTieDyeBackground(x, y) {
-    const cw = canvas.width || 1;
-    const ch = canvas.height || 1;
-    x = Math.max(0, Math.min(x, cw));
-    y = Math.max(0, Math.min(y, ch));
-    
-    const hue = (x / cw) * 360;
-    const rawSat = (y / ch) * 100;
-    const saturation = Math.max(0, Math.min(rawSat, 100));
-    const lightness = 50 + (Math.sin(x * 0.05) * 20);
-    
-    const gradient = ctx.createRadialGradient(x, y, 0, x, y, cw / 2);
-    gradient.addColorStop(0, `hsl(${hue}, ${saturation}%, ${lightness}%)`);
-    gradient.addColorStop(0.25, `hsl(${(hue + 60) % 360}, ${saturation}%, ${lightness - 5}%)`);
-    gradient.addColorStop(0.5, `hsl(${(hue + 120) % 360}, ${saturation}%, ${lightness - 10}%)`);
-    gradient.addColorStop(0.75, `hsl(${(hue + 180) % 360}, ${saturation}%, ${lightness - 15}%)`);
-    gradient.addColorStop(1, `hsl(${(hue + 240) % 360}, ${saturation}%, ${lightness - 20}%)`);
-    return gradient;
-  }
-  
-  function animate() {
-    if (dynamicActive) {
-      const bg = getTieDyeBackground(mouseX, mouseY);
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    } else {
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const pulse = Math.sin(Math.PI * t);
+
+    drawBlack();
+
+    ctx.save();
+    ctx.globalAlpha = pulse;
+    ctx.fillStyle = tieDye(flash.x, flash.y, pulse);
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "screen";
+    const rad = Math.max(w, h) * 0.6;
+    const glow = ctx.createRadialGradient(flash.x, flash.y, 0, flash.x, flash.y, rad);
+    glow.addColorStop(0, `rgba(128,222,234,${0.22 * pulse})`);
+    glow.addColorStop(0.35, `rgba(79,195,247,${0.14 * pulse})`);
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+  };
+
+  const render = (now) => {
+    rafPending = false;
+
+    if (flash) {
+      drawFlash(now);
+      if (flash) schedule();
+      else if (active) drawActive();
+      else drawBlack();
+      return;
     }
-    requestAnimationFrame(animate);
-  }
-  animate();
-  
-  // --- GLOW TOGGLING FUNCTIONS ---
-  const logoContainer = document.querySelector('.logo-container');
-  
-  function disableGlow() {
-    if (logoContainer) {
-      logoContainer.classList.remove('pulsing');
-      logoContainer.classList.add('no-glow');
+
+    if (!active) {
+      drawBlack();
+      return;
     }
+
+    drawActive();
+  };
+
+  const schedule = () => {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(render);
+  };
+
+  const pointFromEvent = (e) => {
+    if (e.touches && e.touches.length > 0) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    if (typeof e.clientX === "number" && typeof e.clientY === "number") return { x: e.clientX, y: e.clientY };
+    return null;
+  };
+
+  const activateFromEvent = (e) => {
+    const pt = pointFromEvent(e);
+    if (!pt) return;
+    x = pt.x;
+    y = pt.y;
+    active = true;
+    schedule();
+  };
+
+  const deactivate = () => {
+    active = false;
+    schedule();
+  };
+
+  const touchMove = (e) => {
+    if (e.cancelable) e.preventDefault();
+    activateFromEvent(e);
+  };
+
+  const startFlashAt = (px, py, dur = 300) => {
+    flash = { x: px, y: py, start: performance.now(), dur };
+    schedule();
+  };
+
+  resize();
+  drawBlack();
+
+  window.addEventListener(
+    "resize",
+    () => {
+      resize();
+      schedule();
+    },
+    { passive: true }
+  );
+
+  container.addEventListener("mousemove", activateFromEvent, { passive: true });
+
+  container.addEventListener("touchstart", activateFromEvent, { passive: true });
+  container.addEventListener("touchmove", touchMove, { passive: false });
+
+  window.addEventListener("mouseup", deactivate, { passive: true });
+  window.addEventListener("touchend", deactivate, { passive: true });
+
+  const email = document.getElementById("email");
+  if (email && isCoarse) {
+    const flashFrom = (evt) => {
+      const r = email.getBoundingClientRect();
+      const px = typeof evt.clientX === "number" ? evt.clientX : r.left + r.width / 2;
+      const py = typeof evt.clientY === "number" ? evt.clientY : r.top + r.height / 2;
+      startFlashAt(px, py, 300);
+    };
+
+    email.addEventListener("touchstart", flashFrom, { passive: true });
+    email.addEventListener("mousedown", flashFrom, { passive: true });
   }
-  
-  function enableGlow() {
-    if (logoContainer) {
-      logoContainer.classList.remove('no-glow');
-      logoContainer.classList.add('pulsing');
-      // Optionally, adjust logo image animation delay for a smoother restart:
-      const logoImg = logoContainer.querySelector('img');
-      if (logoImg) {
-        logoImg.style.animationDelay = '0s';
-        setTimeout(function() {
-          logoImg.style.animationDelay = '0.3s';
-        }, 50);
-      }
-    }
-  }
-  
-  // --- DYNAMIC BACKGROUND & GLOW HANDLING ---
-  function handlePointerStart(e) {
-    e.preventDefault();
-    disableGlow();
-    
-    let x, y;
-    if (e.touches && e.touches.length > 0) {
-      x = e.touches[0].clientX;
-      y = e.touches[0].clientY;
-    } else {
-      x = e.clientX;
-      y = e.clientY;
-    }
-    if (isFinite(x) && isFinite(y)) {
-      mouseX = x;
-      mouseY = y;
-      dynamicActive = true;
-    }
-  }
-  
-  function handlePointerEnd() {
-    dynamicActive = false;
-    enableGlow();
-  }
-  
-  container.addEventListener("touchstart", handlePointerStart, { passive: false });
-  container.addEventListener("touchmove", handlePointerStart, { passive: false });
-  container.addEventListener("mousemove", handlePointerStart);
-  window.addEventListener("touchend", handlePointerEnd, { passive: false });
-  window.addEventListener("mouseup", handlePointerEnd);
-  
-  // --- INITIAL TRANSITION FROM FLICKER TO PULSING ---
+
+  const lc = document.querySelector(".logo-container");
   setTimeout(() => {
-    if (logoContainer && !logoContainer.classList.contains('no-glow')) {
-      logoContainer.classList.add('pulsing');
-    }
+    if (lc) lc.classList.add("pulsing");
   }, 3000);
 });
-
-
-
-

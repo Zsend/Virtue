@@ -1,350 +1,45 @@
-/* GENERAL RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  user-select: none;            /* Disable text selection */
-  -webkit-user-select: none;    /* Safari */
-  -moz-user-select: none;       /* Firefox */
-}
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none;-moz-user-select:none}
+.logo-container img,.logo-container h1{pointer-events:none;will-change:opacity,text-shadow,filter}
+img{-webkit-user-drag:none}
+::selection{background:transparent}
+html,body{width:100%;height:100%;background:#000;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior:none}
+body{height:auto;min-height:100vh;min-height:100dvh;min-height:calc(var(--vh,1vh)*100);display:flex;justify-content:center;align-items:center;padding:28px calc(16px + env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:none}
+input,button,select,textarea{user-select:text;-webkit-user-select:text;-moz-user-select:text;pointer-events:auto}
+.logo-container{position:relative;z-index:2;text-align:center;color:#B0B0B0;pointer-events:none;width:100%;max-width:760px;padding:clamp(16px,4vw,20px);display:flex;flex-direction:column;align-items:center}
+#logo{width:300px;margin-bottom:20px;transform:translate3d(0,0,0);-webkit-transform:translate3d(0,0,0);backface-visibility:hidden;-webkit-backface-visibility:hidden}
+h1{font-size:36px;font-weight:700;text-transform:uppercase;color:#B0B0B0}
+.signup-text{margin-top:14px;font-size:15px;letter-spacing:.2px;opacity:.92;max-width:min(560px,92vw);margin-left:auto;margin-right:auto;text-wrap:balance}
+.subscribe-form{--btn-w:clamp(84px,26vw,120px);--pad:clamp(10px,2.4vw,18px);--vpad:clamp(12px,3vw,14px);margin:16px auto 0;width:100%;max-width:560px;position:relative;border-radius:999px;overflow:hidden;border:1px solid rgba(176,176,176,.35);background:rgba(0,0,0,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);pointer-events:auto}
+.subscribe-form *{pointer-events:auto}
+.subscribe-form input[type=email]{width:100%;min-width:0;padding:var(--vpad) calc(var(--btn-w) + var(--pad));border:0;background:transparent;color:#E6E6E6;outline:none;font-size:16px;text-align:center}
+.subscribe-form input[type=email]::placeholder{color:rgba(176,176,176,.7)}@media (max-width:520px){.subscribe-form input[type=email]{padding-left:var(--pad);padding-right:calc(var(--btn-w) + var(--pad))}}
+.subscribe-form:focus-within{border-color:rgba(128,222,234,.8);box-shadow:0 0 0 4px rgba(128,222,234,.14)}
+.subscribe-form button{position:absolute;top:0;right:0;height:100%;width:var(--btn-w);padding:0;border:0;border-left:1px solid rgba(128,222,234,.35);background:rgba(128,222,234,.14);color:#E6E6E6;font-weight:700;letter-spacing:.25px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 120ms ease,box-shadow 120ms ease}
+.subscribe-form button:hover{background:rgba(128,222,234,.22);box-shadow:inset 0 0 0 1px rgba(128,222,234,.18)}
+.subscribe-form button:active{background:rgba(128,222,234,.26)}
+@media (max-width:360px){.subscribe-form input[type=email]{font-size:15px}.subscribe-form button{font-size:15px}}
+.signup-fineprint{margin-top:10px;font-size:12px;opacity:.75}
+.honeypot{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.thanks-actions{margin-top:14px}
+.btn{display:inline-block;padding:12px 16px;border-radius:10px;border:1px solid rgba(128,222,234,.55);background:rgba(0,0,0,.35);color:#E6E6E6;font-weight:700;text-decoration:none;letter-spacing:.3px;pointer-events:auto}
+.btn:hover{border-color:rgba(128,222,234,.85);box-shadow:0 0 0 3px rgba(128,222,234,.12)}
+.logo-container h1{animation:neonFlicker 6s infinite ease-in-out}
+.logo-container img{animation:neonFlickerLogo 7s infinite ease-in-out;animation-delay:.3s}
+.logo-container.pulsing h1{animation:neonPulse 3s infinite ease-in-out}
+.logo-container.pulsing img{animation:neonPulseLogo 6s infinite ease-in-out;animation-delay:.3s}
+.logo-container.no-glow h1,.logo-container.no-glow img{animation:none!important;text-shadow:none!important;filter:none!important}
+@keyframes neonFlicker{0%{opacity:0;text-shadow:none}3%{opacity:1;text-shadow:0 0 2px #1565C0,0 0 4px #0D47A1,0 0 6px #0A357A}6%{opacity:0;text-shadow:none}9%{opacity:.8;text-shadow:0 0 2px #1565C0,0 0 4px #0D47A1,0 0 6px #0A357A}12%{opacity:0;text-shadow:none}15%{opacity:.7;text-shadow:0 0 2px #1565C0,0 0 4px #0D47A1,0 0 6px #0A357A}20%{opacity:1;text-shadow:0 0 3px #1565C0,0 0 6px #0D47A1,0 0 9px #0A357A}25%{opacity:.5;text-shadow:0 0 2px #1565C0,0 0 4px #0D47A1,0 0 6px #0A357A}30%,60%{opacity:1;text-shadow:0 0 3px #1565C0,0 0 6px #0D47A1,0 0 9px #0A357A}100%{opacity:1;text-shadow:0 0 3px #1565C0,0 0 6px #0D47A1,0 0 9px #0A357A}}
+@keyframes neonPulse{0%{opacity:.8;text-shadow:0 0 1.7px #1565C0,0 0 3.4px #0D47A1,0 0 5px #0A357A}50%{opacity:1;text-shadow:0 0 3.4px #1565C0,0 0 6.8px #0D47A1,0 0 10px #0A357A}100%{opacity:.8;text-shadow:0 0 1.7px #1565C0,0 0 3.4px #0D47A1,0 0 5px #0A357A}}
+@keyframes neonFlickerLogo{0%{opacity:0;filter:none}3%{opacity:1;filter:drop-shadow(0 0 2px #80DEEA) drop-shadow(0 0 4px #4FC3F7) drop-shadow(0 0 6px #29B6F6)}6%{opacity:0;filter:none}9%{opacity:.8;filter:drop-shadow(0 0 2px #80DEEA) drop-shadow(0 0 4px #4FC3F7) drop-shadow(0 0 6px #29B6F6)}12%{opacity:0;filter:none}15%{opacity:.6;filter:drop-shadow(0 0 2px #80DEEA) drop-shadow(0 0 4px #4FC3F7) drop-shadow(0 0 6px #29B6F6)}20%{opacity:1;filter:drop-shadow(0 0 3px #80DEEA) drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 9px #29B6F6)}25%{opacity:.5;filter:drop-shadow(0 0 2px #80DEEA) drop-shadow(0 0 4px #4FC3F7) drop-shadow(0 0 6px #29B6F6)}30%,60%{opacity:1;filter:drop-shadow(0 0 3px #80DEEA) drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 9px #29B6F6)}100%{opacity:1;filter:drop-shadow(0 0 3px #80DEEA) drop-shadow(0 0 6px #4FC3F7) drop-shadow(0 0 9px #29B6F6)}}
+@keyframes neonPulseLogo{0%{opacity:1;filter:drop-shadow(0 0 1.2px #80DEEA) drop-shadow(0 0 2.4px #4FC3F7) drop-shadow(0 0 3.6px #29B6F6)}25%{opacity:1;filter:drop-shadow(0 0 1.35px #80DEEA) drop-shadow(0 0 2.7px #4FC3F7) drop-shadow(0 0 4.05px #29B6F6)}50%{opacity:1;filter:drop-shadow(0 0 1.6px #80DEEA) drop-shadow(0 0 3.2px #4FC3F7) drop-shadow(0 0 4.8px #29B6F6)}75%{opacity:1;filter:drop-shadow(0 0 1.35px #80DEEA) drop-shadow(0 0 2.7px #4FC3F7) drop-shadow(0 0 4.05px #29B6F6)}90%{opacity:.98;filter:drop-shadow(0 0 1.3px #80DEEA) drop-shadow(0 0 2.6px #4FC3F7) drop-shadow(0 0 3.9px #29B6F6)}100%{opacity:1;filter:drop-shadow(0 0 1.2px #80DEEA) drop-shadow(0 0 2.4px #4FC3F7) drop-shadow(0 0 3.6px #29B6F6)}}
+@media (hover:none) and (pointer:coarse){.logo-container.pulsing h1{animation:neonPulseMobile 3s infinite ease-in-out;text-shadow:none}}
+@keyframes neonPulseMobile{0%{opacity:.8;-webkit-filter:drop-shadow(0 0 1px #1565C0) drop-shadow(0 0 2px #0D47A1) drop-shadow(0 0 3px #0A357A);filter:drop-shadow(0 0 1px #1565C0) drop-shadow(0 0 2px #0D47A1) drop-shadow(0 0 3px #0A357A)}50%{opacity:.95;-webkit-filter:drop-shadow(0 0 2px #1565C0) drop-shadow(0 0 4px #0D47A1) drop-shadow(0 0 6px #0A357A);filter:drop-shadow(0 0 2px #1565C0) drop-shadow(0 0 4px #0D47A1) drop-shadow(0 0 6px #0A357A)}100%{opacity:.8;-webkit-filter:drop-shadow(0 0 1px #1565C0) drop-shadow(0 0 2px #0D47A1) drop-shadow(0 0 3px #0A357A);filter:drop-shadow(0 0 1px #1565C0) drop-shadow(0 0 2px #0D47A1) drop-shadow(0 0 3px #0A357A)}}
+#canvas-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;touch-action:none}
+@media (max-width:600px){h1{font-size:24px}#logo{width:200px}.logo-container{padding:20px}.logo-container img,.logo-container h1{-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform,opacity,filter,text-shadow}}
+@media (max-width:1024px){h1{font-size:28px}#logo{width:250px}}
+@media (min-width:1600px){h1{font-size:48px}#logo{width:350px}}
+.logo-container{-webkit-touch-callout:none}
+@media (max-height:520px){body{align-items:flex-start;padding-top:20px}}
 
-/* Disable pointer events on images and headings to prevent clicking */
-.logo-container img,
-.logo-container h1 {
-  pointer-events: none;
-  will-change: opacity, text-shadow, filter;
-}
-
-/* Disable image dragging in WebKit browsers */
-img {
-  -webkit-user-drag: none;
-}
-
-/* Optional: disable selection highlighting */
-::selection {
-  background: transparent;
-}
-
-/* Disable tap highlight on mobile devices */
-body, html {
-  -webkit-tap-highlight-color: transparent;
-  touch-action: none;
-}
-
-/* BODY & PAGE SETUP */
-body, html {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #000;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-}
-
-/* LOGO AND HEADING STYLING */
-.logo-container {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  color: #B0B0B0; /* Light grey for text */
-}
-
-#logo {
-  width: 300px;
-  margin-bottom: 20px;
-  /* Force hardware acceleration for smoother animations */
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-h1 {
-  font-size: 36px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #B0B0B0; /* Light grey for text */
-}
-
-/* --- NEON GLOWING EFFECTS --- */
-
-/* Default flicker animations on page load */
-.logo-container h1 {
-  /* Changed to darker blue glow */
-  animation: neonFlicker 6s infinite ease-in-out;
-}
-.logo-container img {
-  /* Logo glows in pastel cyan (unchanged) */
-  animation: neonFlickerLogo 7s infinite ease-in-out;
-  animation-delay: 0.3s;
-}
-
-/* When the .pulsing class is present, use smooth pulsing animations */
-.logo-container.pulsing h1 {
-  animation: neonPulse 3s infinite ease-in-out;
-}
-.logo-container.pulsing img {
-  animation: neonPulseLogo 6s infinite ease-in-out;
-  animation-delay: 0.3s;
-}
-
-/* When the .no-glow class is present, disable animations */
-.logo-container.no-glow h1,
-.logo-container.no-glow img {
-  animation: none !important;
-  text-shadow: none !important;
-  filter: none !important;
-}
-
-/* ---------- UPDATED KEYFRAMES FOR TEXT (DARKER BLUE GLOW) ---------- */
-@keyframes neonFlicker {
-  0% {
-    opacity: 0;
-    text-shadow: none;
-  }
-  3% {
-    opacity: 1;
-    text-shadow: 0 0 2px #1565C0, 0 0 4px #0D47A1, 0 0 6px #0A357A;
-  }
-  6% {
-    opacity: 0;
-    text-shadow: none;
-  }
-  9% {
-    opacity: 0.8;
-    text-shadow: 0 0 2px #1565C0, 0 0 4px #0D47A1, 0 0 6px #0A357A;
-  }
-  12% {
-    opacity: 0;
-    text-shadow: none;
-  }
-  15% {
-    opacity: 0.7;
-    text-shadow: 0 0 2px #1565C0, 0 0 4px #0D47A1, 0 0 6px #0A357A;
-  }
-  20% {
-    opacity: 1;
-    text-shadow: 0 0 3px #1565C0, 0 0 6px #0D47A1, 0 0 9px #0A357A;
-  }
-  25% {
-    opacity: 0.5;
-    text-shadow: 0 0 2px #1565C0, 0 0 4px #0D47A1, 0 0 6px #0A357A;
-  }
-  30%, 60% {
-    opacity: 1;
-    text-shadow: 0 0 3px #1565C0, 0 0 6px #0D47A1, 0 0 9px #0A357A;
-  }
-  100% {
-    opacity: 1;
-    text-shadow: 0 0 3px #1565C0, 0 0 6px #0D47A1, 0 0 9px #0A357A;
-  }
-}
-
-/* Smooth text pulsing (Dark Blue) */
-@keyframes neonPulse {
-  0% {
-    opacity: 0.8;
-    text-shadow: 0 0 1.7px #1565C0, 0 0 3.4px #0D47A1, 0 0 5px #0A357A;
-  }
-  50% {
-    opacity: 1;
-    text-shadow: 0 0 3.4px #1565C0, 0 0 6.8px #0D47A1, 0 0 10px #0A357A;
-  }
-  100% {
-    opacity: 0.8;
-    text-shadow: 0 0 1.7px #1565C0, 0 0 3.4px #0D47A1, 0 0 5px #0A357A;
-  }
-}
-
-/* ---------- KEYFRAMES FOR LOGO (PASTEL CYAN, UNCHANGED) ---------- */
-@keyframes neonFlickerLogo {
-  0% {
-    opacity: 0;
-    filter: none;
-  }
-  3% {
-    opacity: 1;
-    filter: drop-shadow(0 0 2px #80DEEA)
-            drop-shadow(0 0 4px #4FC3F7)
-            drop-shadow(0 0 6px #29B6F6);
-  }
-  6% {
-    opacity: 0;
-    filter: none;
-  }
-  9% {
-    opacity: 0.8;
-    filter: drop-shadow(0 0 2px #80DEEA)
-            drop-shadow(0 0 4px #4FC3F7)
-            drop-shadow(0 0 6px #29B6F6);
-  }
-  12% {
-    opacity: 0;
-    filter: none;
-  }
-  15% {
-    opacity: 0.6;
-    filter: drop-shadow(0 0 2px #80DEEA)
-            drop-shadow(0 0 4px #4FC3F7)
-            drop-shadow(0 0 6px #29B6F6);
-  }
-  20% {
-    opacity: 1;
-    filter: drop-shadow(0 0 3px #80DEEA)
-            drop-shadow(0 0 6px #4FC3F7)
-            drop-shadow(0 0 9px #29B6F6);
-  }
-  25% {
-    opacity: 0.5;
-    filter: drop-shadow(0 0 2px #80DEEA)
-            drop-shadow(0 0 4px #4FC3F7)
-            drop-shadow(0 0 6px #29B6F6);
-  }
-  30%, 60% {
-    opacity: 1;
-    filter: drop-shadow(0 0 3px #80DEEA)
-            drop-shadow(0 0 6px #4FC3F7)
-            drop-shadow(0 0 9px #29B6F6);
-  }
-  100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 3px #80DEEA)
-            drop-shadow(0 0 6px #4FC3F7)
-            drop-shadow(0 0 9px #29B6F6);
-  }
-}
-
-@keyframes neonPulseLogo {
-  0% {
-    opacity: 1;
-    filter: drop-shadow(0 0 1.2px #80DEEA)
-            drop-shadow(0 0 2.4px #4FC3F7)
-            drop-shadow(0 0 3.6px #29B6F6);
-  }
-  25% {
-    opacity: 1;
-    filter: drop-shadow(0 0 1.35px #80DEEA)
-            drop-shadow(0 0 2.7px #4FC3F7)
-            drop-shadow(0 0 4.05px #29B6F6);
-  }
-  50% {
-    opacity: 1;
-    filter: drop-shadow(0 0 1.6px #80DEEA)
-            drop-shadow(0 0 3.2px #4FC3F7)
-            drop-shadow(0 0 4.8px #29B6F6);
-  }
-  75% {
-    opacity: 1;
-    filter: drop-shadow(0 0 1.35px #80DEEA)
-            drop-shadow(0 0 2.7px #4FC3F7)
-            drop-shadow(0 0 4.05px #29B6F6);
-  }
-  90% {
-    opacity: 0.98;
-    filter: drop-shadow(0 0 1.3px #80DEEA)
-            drop-shadow(0 0 2.6px #4FC3F7)
-            drop-shadow(0 0 3.9px #29B6F6);
-  }
-  100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 1.2px #80DEEA)
-            drop-shadow(0 0 2.4px #4FC3F7)
-            drop-shadow(0 0 3.6px #29B6F6);
-  }
-}
-
-/* ---------- MOBILE-SPECIFIC OVERRIDE FOR TEXT PULSE ---------- */
-@media (hover: none) and (pointer: coarse) {
-  .logo-container.pulsing h1 {
-    animation: neonPulseMobile 3s infinite ease-in-out;
-    text-shadow: none;
-  }
-}
-
-/* Mobile pulsing (now dark blue) */
-@keyframes neonPulseMobile {
-  0% {
-    opacity: 0.8;
-    -webkit-filter: drop-shadow(0 0 1px #1565C0)
-                    drop-shadow(0 0 2px #0D47A1)
-                    drop-shadow(0 0 3px #0A357A);
-    filter: drop-shadow(0 0 1px #1565C0)
-            drop-shadow(0 0 2px #0D47A1)
-            drop-shadow(0 0 3px #0A357A);
-  }
-  50% {
-    opacity: 0.95;
-    -webkit-filter: drop-shadow(0 0 2px #1565C0)
-                    drop-shadow(0 0 4px #0D47A1)
-                    drop-shadow(0 0 6px #0A357A);
-    filter: drop-shadow(0 0 2px #1565C0)
-            drop-shadow(0 0 4px #0D47A1)
-            drop-shadow(0 0 6px #0A357A);
-  }
-  100% {
-    opacity: 0.8;
-    -webkit-filter: drop-shadow(0 0 1px #1565C0)
-                    drop-shadow(0 0 2px #0D47A1)
-                    drop-shadow(0 0 3px #0A357A);
-    filter: drop-shadow(0 0 1px #1565C0)
-            drop-shadow(0 0 2px #0D47A1)
-            drop-shadow(0 0 3px #0A357A);
-  }
-}
-
-/* ---------- CANVAS CONTAINER ---------- */
-#canvas-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-}
-
-/* ---------- RESPONSIVE DESIGN ---------- */
-@media (max-width: 600px) {
-  h1 {
-    font-size: 24px;
-  }
-  #logo {
-    width: 200px;
-  }
-  .logo-container {
-    padding: 20px;
-  }
-  .logo-container img,
-  .logo-container h1 {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    will-change: transform, opacity, filter, text-shadow;
-  }
-}
-@media (max-width: 1024px) {
-  h1 {
-    font-size: 28px;
-  }
-  #logo {
-    width: 250px;
-  }
-}
-@media (min-width: 1600px) {
-  h1 {
-    font-size: 48px;
-  }
-  #logo {
-    width: 350px;
-  }
-}
-
-/* Disable clicking & text selection on the logo/text */
-.logo-container {
-  pointer-events: none;
-  -webkit-touch-callout: none; /* disables iOS long-press menu */
-}
-
-
-
-
+@media (max-width:520px){.subscribe-form{display:flex;flex-direction:column;gap:12px;background:transparent;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;overflow:visible;border-radius:0;box-shadow:none}.subscribe-form:focus-within{border:0;box-shadow:none}.subscribe-form input[type=email]{padding:var(--vpad) var(--pad)!important;border:1px solid rgba(176,176,176,.35);border-radius:999px;background:rgba(0,0,0,.35);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.subscribe-form input[type=email]:focus{border-color:rgba(128,222,234,.8);box-shadow:0 0 0 4px rgba(128,222,234,.14)}.subscribe-form button{position:static;top:auto;right:auto;height:auto;width:100%;padding:var(--vpad) 0;border:1px solid rgba(128,222,234,.38);border-radius:999px;background:linear-gradient(to bottom,rgba(128,222,234,.22),rgba(128,222,234,.12));box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}.subscribe-form button:active{background:linear-gradient(to bottom,rgba(128,222,234,.26),rgba(128,222,234,.14))}}
