@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let dpr = 1;
 
   let active = false;
+  let locked = false;
   let x = 0;
   let y = 0;
 
@@ -22,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const isCoarse =
     (window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches) ||
-    ((navigator.maxTouchPoints || 0) > 0);
+    (navigator.maxTouchPoints || 0) > 0;
 
   const clamp = (n, min, max) => Math.max(min, Math.min(n, max));
 
@@ -131,6 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const activateFromEvent = (e) => {
+    if (!isCoarse && locked) return;
     const pt = pointFromEvent(e);
     if (!pt) return;
     x = pt.x;
@@ -171,8 +173,29 @@ document.addEventListener("DOMContentLoaded", () => {
   container.addEventListener("touchstart", activateFromEvent, { passive: true });
   container.addEventListener("touchmove", touchMove, { passive: false });
 
-  window.addEventListener("mouseup", deactivate, { passive: true });
   window.addEventListener("touchend", deactivate, { passive: true });
+
+  window.addEventListener(
+    "click",
+    (e) => {
+      if (isCoarse) return;
+      if (!locked && !active) return;
+      locked = !locked;
+      if (locked) {
+        active = false;
+        schedule();
+        return;
+      }
+      const pt = pointFromEvent(e);
+      if (pt) {
+        x = pt.x;
+        y = pt.y;
+      }
+      active = true;
+      schedule();
+    },
+    { passive: true }
+  );
 
   const email = document.getElementById("email");
   if (email && isCoarse) {
